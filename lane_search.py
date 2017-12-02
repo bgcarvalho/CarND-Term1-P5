@@ -37,6 +37,8 @@ def calibrate_camera():
     objpoints = [] # 3d points in real world space
     imgpoints = [] # 2d points in image plane.
 
+    print('Calibrating camera ...')
+
     # Make a list of calibration images (there are 20)
     images = glob.glob('./camera_cal/calibration*.jpg')
     
@@ -85,6 +87,8 @@ def calibrate_camera():
     # tvecs - translation vectors
     # 
     r, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, shape, None, None)
+
+    print('done.')
     #h0, w0 = img.shape[:2]
     #newmtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (w0, h0), 1, (w0, h0))
     return mtx, dist
