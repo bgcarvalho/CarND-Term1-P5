@@ -21,15 +21,17 @@ class Car():
         self.cell_per_block = 2
         self.hist_bins = 32
         self.cells_per_step = 2
+        self.heatmap_thresh = 2
         # self.color_space = 'LUV'
         self.color_space = 'YCrCb'
         self.found_car_box_color = (0, 0, 0)
         self.found_car_box_thick = 5
+        self.found_car_box_form = 'box'
         # self.found_car_box_color = (0, 0, 255)
         # self.found_car_box_color = (255, 0, 0)
         self.video_fps = 24
         self.search_freq = 10
-        self.search_car_time = 0
+        self.search_car_time = 0.0
 
         self.current_boxes = []
         self.previous_boxes = []
@@ -51,32 +53,49 @@ class Car():
             self.current_boxes = []
             # print('Searching cars on frame {:06d}'.format(self.n_frame))
             t = time.time()
+            box_list = []
             for ystart, ystop, scale in zip(ysal, ysol, scales):
-                out_img, box_list = self.find_cars(img,
-                                                   self.n_frame,
-                                                   self.color_space,
-                                                   ystart,
-                                                   ystop,
-                                                   scale,
-                                                   self.model,
-                                                   self.scaler,
-                                                   self.orient,
-                                                   self.pix_per_cell,
-                                                   self.cell_per_block,
-                                                   self.cells_per_step,
-                                                   self.spatial_size,
-                                                   self.window,
-                                                   self.hist_bins)
-                self.current_boxes += box_list
+                out_img, boxes = self.find_cars(img,
+                                                self.n_frame,
+                                                self.color_space,
+                                                ystart,
+                                                ystop,
+                                                scale,
+                                                self.model,
+                                                self.scaler,
+                                                self.orient,
+                                                self.pix_per_cell,
+                                                self.cell_per_block,
+                                                self.cells_per_step,
+                                                self.spatial_size,
+                                                self.window,
+                                                self.hist_bins)
+                # self.current_boxes += box_list
+                box_list.extend(boxes)
+
+            # time to search car in a single frame
             t2 = time.time()
-            lbs = self.get_heat_labels(img, box_list)
-            out_img = self.draw_labeled_boxes(img, lbs)
-            self.search_car_time = np.amax(t2 - t, self.search_car_time)
+
+            # box_list has all boxes that match a car
+            carlbl = self.get_heat_labels(img, box_list)
+
+            # pixel_box has boxes after heatmap threshold and filter
+            pixel_box = self.labels2boxes(carlbl)
+
+            # pixel_box has boxes after heatmap threshold
+            # out_img, pixel_box = self.draw_labeled_boxes(img, carlbl)
+
+            out_img = self.draw_locations(img, pixel_box)
+
+            self.current_boxes = pixel_box
+            self.search_car_time = max(t2 - t, self.search_car_time)
         else:
             # boxes
             # lbs = self.get_heat_labels(img, self.current_boxes)
-            lbs = self.get_heat_labels(img, self.previous_boxes)
-            out_img = self.draw_labeled_boxes(img, lbs)
+            # lbs = self.get_heat_labels(img, self.previous_boxes)
+            # out_img = self.draw_labeled_boxes(img, lbs)
+            # out_img = self.draw_labeled_boxes(img, self.previous_boxes)
+            out_img = self.draw_locations(img, self.current_boxes)
 
         # =====================
         # Find Road Lane Lines
@@ -85,19 +104,21 @@ class Car():
 
         return out_img
 
-    def draw_locations(self, img, bboxes, thick=6, form='box'):
+    def draw_locations(self, img, box_list):
         # make a copy of the image
         draw_img = np.copy(img)
-        if form == 'box':
+        color = self.found_car_box_color
+        thick = self.found_car_box_thick
+        if self.found_car_box_form == 'box':
             # draw each bounding box on your image copy using cv2.rectangle()
-            for box in bboxes:
-                color = self.found_car_box_color
+            for box in box_list:
                 cv2.rectangle(draw_img, box[0], box[1], color, thick)
-        elif form == 'circle':
-            center = ((box[0][0] + box[1][0]) / 2, (box[0][1] + box[1][1]) / 2)
-            radius = (box[1][0] - box[0][0]) / 2
-            color = self.found_car_box_color
-            cv2.circle(draw_img, center, radius, color, thick)
+        elif self.found_car_box_form == 'circle':
+            for box in box_list:
+                center = (np.int((box[0][0] + box[1][0]) / 2),
+                          np.int((box[0][1] + box[1][1]) / 2))
+                radius = np.int((box[1][0] - box[0][0]) / 2)
+                cv2.circle(draw_img, center, radius, color, thick)
 
         # return the image copy with boxes drawn
         return draw_img
@@ -245,9 +266,9 @@ class Car():
 
         return draw_img, bbox
 
-    def add_heat(self, heatmap, bbox_list):
+    def add_heat(self, heatmap, box_list):
         # Iterate through list of bboxes
-        for box in bbox_list:
+        for box in box_list:
             # Add += 1 for all pixels inside each bbox
             # Assuming each "box" takes the form ((x1, y1), (x2, y2))
             heatmap[box[0][1]:box[1][1], box[0][0]:box[1][0]] += 1
@@ -262,11 +283,12 @@ class Car():
     def get_heat_labels(self, img, box_list):
         heat = np.zeros_like(img[:, :, 0]).astype(np.float)
         heat = self.add_heat(heat, box_list)
-        heat = self.apply_threshold(heat, 1)
+        heat = self.apply_threshold(heat, self.heatmap_thresh)
         heatmap = np.clip(heat, 0, 255)
         return label(heatmap)
 
-    def draw_labeled_boxes(self, img, labels):
+    def labels2boxes(self, labels):
+        box_list = []
         # Iterate through all detected cars
         for car_number in range(1, labels[1] + 1):
             # Find pixels with each car_number label value
@@ -275,15 +297,33 @@ class Car():
             nonzeroy = np.array(nonzero[0])
             nonzerox = np.array(nonzero[1])
             # Define a bounding box based on min/max x and y
-            bbox = ((np.min(nonzerox), np.min(nonzeroy)),
-                    (np.max(nonzerox), np.max(nonzeroy)))
+            box = ((np.min(nonzerox), np.min(nonzeroy)),
+                   (np.max(nonzerox), np.max(nonzeroy)))
+
+            box_list.append(box)
+
+        return box_list
+
+    def draw_labeled_boxes(self, img, labels):
+        box_list = []
+        # Iterate through all detected cars
+        for car_number in range(1, labels[1] + 1):
+            # Find pixels with each car_number label value
+            nonzero = (labels[0] == car_number).nonzero()
+            # Identify x and y values of those pixels
+            nonzeroy = np.array(nonzero[0])
+            nonzerox = np.array(nonzero[1])
+            # Define a bounding box based on min/max x and y
+            box = ((np.min(nonzerox), np.min(nonzeroy)),
+                   (np.max(nonzerox), np.max(nonzeroy)))
 
             # Draw the box on the image
             color = self.found_car_box_color
             t = self.found_car_box_thick
-            cv2.rectangle(img, bbox[0], bbox[1], color, t)
+            cv2.rectangle(img, box[0], box[1], color, t)
+            box_list.append(box)
 
-        return img
+        return img, box_list
 
     def id_cars(self, img, labels):
         cars = []
