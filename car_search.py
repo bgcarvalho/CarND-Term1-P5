@@ -1,7 +1,9 @@
 import numpy as np
 import cv2
+import time
 from lane_search import Lane
 from skimage.feature import hog
+from scipy.ndimage.measurements import label
 
 
 class Car():
@@ -19,50 +21,67 @@ class Car():
         self.cell_per_block = 2
         self.hist_bins = 32
         self.cells_per_step = 2
-        self.color_space = 'LUV'
+        # self.color_space = 'LUV'
+        self.color_space = 'YCrCb'
         self.found_car_box_color = (0, 0, 0)
+        self.found_car_box_thick = 5
         # self.found_car_box_color = (0, 0, 255)
         # self.found_car_box_color = (255, 0, 0)
+        self.video_fps = 24
+        self.search_freq = 10
+        self.search_car_time = 0
 
         self.current_boxes = []
+        self.previous_boxes = []
+
+    def search_rate(self, r):
+        self.search_freq = np.int(self.video_fps / r)
 
     def processFrame(self, img):
         self.n_frame += 1
 
-        ysal = [400, 410, 420, 440, 440]
-        ysol = [656, 650, 650, 650, 650]
+        ysal = [400, 400, 400, 400, 400]
+        ysol = [656, 656, 656, 656, 656]
         scales = [1, 1.25, 1.5, 1.75, 2]
 
-        if self.n_frame % 10 == 0:
-            self.current_boxes = []
-            for ystart, ystop, scale in zip(ysal, ysol, scales):
-                out_img, box_list = find_cars(img,
-                                              self.n_frame,
-                                              self.color_space,
-                                              ystart,
-                                              ystop,
-                                              scale,
-                                              self.model,
-                                              self.scaler,
-                                              self.orient,
-                                              self.pix_per_cell,
-                                              self.cell_per_block,
-                                              self.cells_per_step,
-                                              self.spatial_size,
-                                              self.window,
-                                              self.hist_bins)
-                self.current_boxes.append(box_list)
+        if np.any(self.current_boxes):
+            self.previous_boxes = np.copy(self.current_boxes)
 
-            car_bbox = self.apply_heat(img, box_list)
-            out_img = self.draw_locations(car_bbox)
+        if self.n_frame == 1 or self.n_frame % self.search_freq == 0:
+            self.current_boxes = []
+            # print('Searching cars on frame {:06d}'.format(self.n_frame))
+            t = time.time()
+            for ystart, ystop, scale in zip(ysal, ysol, scales):
+                out_img, box_list = self.find_cars(img,
+                                                   self.n_frame,
+                                                   self.color_space,
+                                                   ystart,
+                                                   ystop,
+                                                   scale,
+                                                   self.model,
+                                                   self.scaler,
+                                                   self.orient,
+                                                   self.pix_per_cell,
+                                                   self.cell_per_block,
+                                                   self.cells_per_step,
+                                                   self.spatial_size,
+                                                   self.window,
+                                                   self.hist_bins)
+                self.current_boxes += box_list
+            t2 = time.time()
+            lbs = self.get_heat_labels(img, box_list)
+            out_img = self.draw_labeled_boxes(img, lbs)
+            self.search_car_time = np.amax(t2 - t, self.search_car_time)
         else:
-            # draw_locations
-            pass
+            # boxes
+            # lbs = self.get_heat_labels(img, self.current_boxes)
+            lbs = self.get_heat_labels(img, self.previous_boxes)
+            out_img = self.draw_labeled_boxes(img, lbs)
 
         # =====================
         # Find Road Lane Lines
         # =====================
-        out_img = self.lanes.searchFrame(out_img)
+        # out_img = self.lanes.processFrame(out_img)
 
         return out_img
 
@@ -83,15 +102,18 @@ class Car():
         # return the image copy with boxes drawn
         return draw_img
 
-    def color_hist(self, img, nb=32, br=(0, 256)):
+    def color_hist(self, img, nbins=32, br=(0, 256)):
         # Compute the histogram of the RGB channels separately
-        rhist, bin_edges = np.histogram(img[:, :, 0], bins=nb, range=br, density=True)
+        rhist, bin_edges = np.histogram(img[:, :, 0], bins=nbins,
+                                        range=br, density=True)
         rhist = rhist * np.diff(bin_edges)
 
-        ghist, bin_edges = np.histogram(img[:, :, 1], bins=nb, range=br, density=True)
+        ghist, bin_edges = np.histogram(img[:, :, 1], bins=nbins,
+                                        range=br, density=True)
         ghist = ghist * np.diff(bin_edges)
 
-        bhist, bin_edges = np.histogram(img[:, :, ], bins=nb, range=br, density=True)
+        bhist, bin_edges = np.histogram(img[:, :, ], bins=nbins,
+                                        range=br, density=True)
         bhist = bhist * np.diff(bin_edges)
 
         # Concatenate the histograms into a single feature vector
@@ -112,10 +134,13 @@ class Car():
         # Call with two outputs if vis==True
         if vis is True:
             features, hog_image = hog(img, orientations=orient,
-                                      pixels_per_cell=(pix_per_cell, pix_per_cell),
-                                      cells_per_block=(cell_per_block, cell_per_block),
+                                      pixels_per_cell=(pix_per_cell,
+                                                       pix_per_cell),
+                                      cells_per_block=(cell_per_block,
+                                                       cell_per_block),
                                       transform_sqrt=True,
-                                      visualise=vis, feature_vector=feature_vec)
+                                      visualise=vis,
+                                      feature_vector=feature_vec)
             return features, hog_image
         # Otherwise call with one output
         else:
@@ -204,17 +229,19 @@ class Car():
                 # boxlist.append((p1,p2))
                 t = 6
 
-                # cv2.rectangle(draw_img, (xleft, ytop + ystart), (xleft + window, ytop + window + ystart), (0, 0, 0), 5)
-                # cv2.rectangle(draw_img, p1, p2, (255, 255, 255), 2)  # white box
+                # cv2.rectangle(draw_img, (xleft, ytop + ystart),
+                #               xleft + window, ytop + window + ystart),
+                #               (0, 0, 0), 5)
+                # cv2.rectangle(draw_img, p1, p2, (255, 255, 255), 2)
                 if test_prediction == 1:
                     # blue
                     cor = self.found_car_box_color
                     cv2.rectangle(draw_img, p1, p2, cor, t)
-                    bbox.append((p1,p2))
+                    bbox.append((p1, p2))
                 else:
                     # green
                     cor = (0, 255, 0)
-                    # cv2.rectangle(draw_img, p1, p2, cor, 3) 
+                    # cv2.rectangle(draw_img, p1, p2, cor, 3)
 
         return draw_img, bbox
 
@@ -232,7 +259,34 @@ class Car():
         heatmap[heatmap <= threshold] = 0
         return heatmap
 
-    def draw_labeled_boxes(img, labels):
+    def get_heat_labels(self, img, box_list):
+        heat = np.zeros_like(img[:, :, 0]).astype(np.float)
+        heat = self.add_heat(heat, box_list)
+        heat = self.apply_threshold(heat, 1)
+        heatmap = np.clip(heat, 0, 255)
+        return label(heatmap)
+
+    def draw_labeled_boxes(self, img, labels):
+        # Iterate through all detected cars
+        for car_number in range(1, labels[1] + 1):
+            # Find pixels with each car_number label value
+            nonzero = (labels[0] == car_number).nonzero()
+            # Identify x and y values of those pixels
+            nonzeroy = np.array(nonzero[0])
+            nonzerox = np.array(nonzero[1])
+            # Define a bounding box based on min/max x and y
+            bbox = ((np.min(nonzerox), np.min(nonzeroy)),
+                    (np.max(nonzerox), np.max(nonzeroy)))
+
+            # Draw the box on the image
+            color = self.found_car_box_color
+            t = self.found_car_box_thick
+            cv2.rectangle(img, bbox[0], bbox[1], color, t)
+
+        return img
+
+    def id_cars(self, img, labels):
+        cars = []
         # Iterate through all detected cars
         for car_number in range(1, labels[1] + 1):
             # Find pixels with each car_number label value
@@ -244,7 +298,29 @@ class Car():
             bbox = ((np.min(nonzerox), np.min(nonzeroy)),
                     (np.max(nonzerox), np.max(nonzeroy)))
             # Draw the box on the image
-            blue = (0, 0, 255)
-            cv2.rectangle(img, bbox[0], bbox[1], blue, 6)
+            pixels = img[bbox[0][0]:bbox[1][0], bbox[0][1]:bbox[1][1]]
+            cars.append(self.id_car_model(pixels))
 
-        return img
+        return cars
+
+    def id_car_model(self, pixel_box):
+        car = self.model.predict(pixel_box)
+        cardict = {
+            'model': '',
+            'year': '',
+            'color': '',
+            'data': car,
+        }
+        return cardict
+
+    def convert_color(self, img, conv='YUV'):
+        if conv == 'HLS':
+            return cv2.cvtColor(img, cv2.COLOR_RGB2HLS)
+        if conv == 'LUV':
+            return cv2.cvtColor(img, cv2.COLOR_RGB2LUV)
+        if conv == 'YUV':
+            return cv2.cvtColor(img, cv2.COLOR_RGB2LUV)
+        if conv == 'HSV':
+            return cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
+        if conv == 'YCrCb':
+            return cv2.cvtColor(img, cv2.COLOR_RGB2YCrCb)
