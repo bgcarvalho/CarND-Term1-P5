@@ -102,14 +102,15 @@ windows it is calculated the feature vector with raw color, histogram and HOG.
 The `cells_per_step = 2` variable controlls the overlapping in search, 
 in this case equals to 75% [Class](https://classroom.udacity.com/nanodegrees/nd013/parts/fbf77062-5703-404e-b60c-95b78b2f3f9e/modules/2b62a1c3-e151-4a0e-b6b6-e424fa46ceab/lessons/fd66c083-4ccb-4fe3-bda1-c29db76f50a0/concepts/c3e815c7-1794-4854-8842-5d7b96276642).
 
-Together with HOG features are also use raw colors (`bin_spatial`) and 
+Together with HOG features it was also used raw colors (`bin_spatial`) and 
 histogram (`color_hist`), both reshaped to
 1-D and then all three concatenated. This feature vector is chosen to have
-enough "car information" and reduce false positives.
+enough "car information" and reduce false positives (some example feature
+vectors below).
 
 ![Feature vectors plotted][features]
 
-Also a heat map is used to increase confidence by suming detections of the 
+A heat map is used to increase confidence by suming detections of the 
 same car and then applying a threshold (note that the leftmost detection is
 discarted).
 
@@ -128,6 +129,32 @@ previous project [copied here](./lane_search.py).
 
 Full video is [here](./project_video_overlay.mp4).
 
+Heat map is implemented as:
+
+```python
+
+def add_heat(self, heatmap, box_list):
+    # Iterate through list of bboxes
+    for box in box_list:
+        # Add += 1 for all pixels inside each bbox
+        # Assuming each "box" takes the form ((x1, y1), (x2, y2))
+        heatmap[box[0][1]:box[1][1], box[0][0]:box[1][0]] += 1
+
+    # Return updated heatmap
+    return heatmap
+
+def apply_threshold(self, heatmap, threshold):
+    heatmap[heatmap <= threshold] = 0
+    return heatmap
+
+def get_heat_labels(self, img, box_list):
+    heat = np.zeros_like(img[:, :, 0]).astype(np.float)
+    heat = self.add_heat(heat, box_list)
+    heat = self.apply_threshold(heat, self.heatmap_thresh)
+    heatmap = np.clip(heat, 0, 255)
+    return label(heatmap)
+```
+
 
 ## Final notes
 - LUV color space can produce infinity values, breaking the pipeline
@@ -135,7 +162,8 @@ Full video is [here](./project_video_overlay.mp4).
 - A bug in [0 - 1] <=> [0 255] intervals convertions took me a few days to solve
 - Processing the search every 8 or 10 frames helps to speed up the algorithm,
 but is not enough to consider the algorithm fast. For example, it couldn't 
-process video in real time (24 FPS)
+process video in real time (24 FPS). HOG function is especially heavy 
+(`_hog_normalize_block` is called 6300 times for one frame)
 - It is possibile to reduce regions of search, use less scales
 - It could be possible to find a even better color filter combination
 - Time to extract features before training: 100s
