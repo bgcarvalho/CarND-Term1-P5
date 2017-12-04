@@ -15,7 +15,7 @@ and track vehicles' positions in a video feed.
 [test]: ./output_images/test_model.png
 [searchs1]: ./output_images/searchwin_s1.png
 [heatmap]: ./output_images/heatmap.png
-
+[video1]: ./output_images/video_out1.png
 
 
 ## Extrating image HOG features
@@ -70,7 +70,7 @@ hog_features = np.ravel(hog_features)
 
 ```
 
-The function `np.ravel` reshapes the vetor turning it into 1-D array.
+The function `np.ravel` reshapes the array turning it into 1-D vector.
 
 
 ![HOG examples for some images][hog]
@@ -90,9 +90,6 @@ scaled_X = X_scaler.transform(X)
 The scikit-learn scaler works best with with `np.float64` data type.
 
 
-![Feature vectors plotted][features]
-
-
 ### Sliding search
 
 The model was trained for 64x64 car images. In order to properly search cars 
@@ -110,6 +107,8 @@ histogram (`color_hist`), both reshaped to
 1-D and then all three concatenated. This feature vector is chosen to have
 enough "car information" and reduce false positives.
 
+![Feature vectors plotted][features]
+
 Also a heat map is used to increase confidence by suming detections of the 
 same car and then applying a threshold (note that the leftmost detection is
 discarted).
@@ -117,16 +116,29 @@ discarted).
 ![Heatmap reduces false positives][heatmap]
 
 
-## Discussions
+## Video
+
+After tunning the pipeline, functions were joined in a Python class and enable
+more control over processing sequential images (video frames).
+
+Implementation is [here](./car_search.py), and it uses lane detection from the
+previous project [copied here](./lane_search.py).
+
+![video output][video1]
+
+Full video is [here](./project_video_overlay.mp4).
+
+
+## Final notes
 - LUV color space can produce infinity values, breaking the pipeline
 - YCrCB color space works fine
 - A bug in [0 - 1] <=> [0 255] intervals convertions took me a few days to solve
 - Processing the search every 8 or 10 frames helps to speed up the algorithm,
-but is not enough to consider the algorithm fast
+but is not enough to consider the algorithm fast. For example, it couldn't 
+process video in real time (24 FPS)
+- It is possibile to reduce regions of search, use less scales
+- It could be possible to find a even better color filter combination
 - Time to extract features before training: 100s
 - Time to train: 27s
 - Time to predict cars in a single frame: 0.48s (testing with four scales)
 
-
-
-## References

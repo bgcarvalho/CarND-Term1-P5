@@ -1,0 +1,246 @@
+%%prun test_speed()
+
+
+         105669 function calls in 0.479 seconds
+
+   Ordered by: internal time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+      882    0.085    0.000    0.166    0.000 function_base.py:432(histogram)
+        3    0.047    0.016    0.047    0.016 {skimage.feature._hoghistogram.hog_histograms}
+     6300    0.043    0.000    0.072    0.000 _hog.py:8(_hog_normalize_block)
+        4    0.042    0.011    0.042    0.011 {method 'decode' of 'ImagingDecoder' objects}
+     9838    0.034    0.000    0.034    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+     9147    0.018    0.000    0.065    0.000 {built-in method numpy.core.multiarray.array}
+        3    0.016    0.005    0.140    0.047 _hog.py:25(hog)
+      882    0.015    0.000    0.024    0.000 function_base.py:25(linspace)
+      882    0.013    0.000    0.013    0.000 {built-in method numpy.core.multiarray.bincount}
+     3824    0.012    0.000    0.012    0.000 {method 'astype' of 'numpy.ndarray' objects}
+        1    0.010    0.010    0.406    0.406 <ipython-input-13-d1d093c2bbf2>:2(find_cars)
+     1764    0.009    0.000    0.011    0.000 function_base.py:1848(diff)
+      294    0.009    0.000    0.027    0.000 data.py:659(transform)
+      589    0.009    0.000    0.009    0.000 {resize}
+     6300    0.009    0.000    0.029    0.000 fromnumeric.py:1730(sum)
+     2646    0.008    0.000    0.008    0.000 {method 'ravel' of 'numpy.ndarray' objects}
+      294    0.007    0.000    0.178    0.001 <ipython-input-6-2cca0a82fb51>:2(color_hist)
+        2    0.006    0.003    0.006    0.003 {method 'nonzero' of 'numpy.ndarray' objects}
+      588    0.005    0.000    0.027    0.000 validation.py:279(check_array)
+        1    0.004    0.004    0.004    0.004 {built-in method scipy.ndimage._ni_label._label}
+     1766    0.004    0.000    0.004    0.000 {built-in method numpy.core.multiarray.arange}
+        1    0.004    0.004    0.004    0.004 {method 'clip' of 'numpy.ndarray' objects}
+      588    0.003    0.000    0.010    0.000 validation.py:32(_assert_all_finite)
+      294    0.003    0.000    0.018    0.000 base.py:278(decision_function)
+    11921    0.003    0.000    0.003    0.000 {built-in method builtins.isinstance}
+      294    0.003    0.000    0.003    0.000 {built-in method numpy.core.multiarray.dot}
+      294    0.003    0.000    0.012    0.000 <ipython-input-7-dc3f84f1ceb9>:2(bin_spatial)
+      588    0.002    0.000    0.002    0.000 {built-in method numpy.core.multiarray.concatenate}
+     7770    0.002    0.000    0.028    0.000 _methods.py:31(_sum)
+        1    0.002    0.002    0.002    0.002 <ipython-input-16-4287944b9f96>:13(apply_threshold)
+     5891    0.002    0.000    0.010    0.000 numeric.py:534(asanyarray)
+      889    0.002    0.000    0.002    0.000 {built-in method numpy.core.multiarray.zeros}
+        3    0.002    0.001    0.002    0.001 function_base.py:1502(gradient)
+      294    0.002    0.000    0.020    0.000 base.py:311(predict)
+        1    0.002    0.002    0.479    0.479 <string>:1(<module>)
+     1764    0.002    0.000    0.003    0.000 function_base.py:213(iterable)
+        2    0.002    0.001    0.002    0.001 {method 'join' of 'bytes' objects}
+      883    0.002    0.000    0.007    0.000 fromnumeric.py:1973(all)
+        1    0.002    0.002    0.477    0.477 <ipython-input-31-594c862cb2a6>:1(test_speed)
+     3242    0.002    0.000    0.002    0.000 {built-in method builtins.hasattr}
+      882    0.002    0.000    0.002    0.000 {built-in method numpy.core.multiarray.result_type}
+      588    0.001    0.000    0.003    0.000 validation.py:124(_shape_repr)
+      591    0.001    0.000    0.002    0.000 shape_base.py:63(atleast_2d)
+       43    0.001    0.000    0.001    0.000 {method 'encode' of 'ImagingEncoder' objects}
+        1    0.001    0.001    0.001    0.001 {cvtColor}
+     1470    0.001    0.000    0.010    0.000 {method 'sum' of 'numpy.ndarray' objects}
+     1766    0.001    0.000    0.001    0.000 {built-in method builtins.iter}
+      882    0.001    0.000    0.001    0.000 numeric.py:2135(isscalar)
+      298    0.001    0.000    0.003    0.000 fromnumeric.py:2174(amax)
+      588    0.001    0.000    0.002    0.000 {method 'join' of 'str' objects}
+     1764    0.001    0.000    0.001    0.000 validation.py:151(<genexpr>)
+      588    0.001    0.000    0.002    0.000 validation.py:103(_num_samples)
+      883    0.001    0.000    0.005    0.000 {method 'all' of 'numpy.ndarray' objects}
+      294    0.001    0.000    0.002    0.000 validation.py:689(check_is_fitted)
+        1    0.001    0.001    0.008    0.008 <ipython-input-16-4287944b9f96>:19(draw_labeled_boxes)
+      882    0.001    0.000    0.001    0.000 function_base.py:664(<listcomp>)
+        3    0.001    0.000    0.140    0.047 <ipython-input-8-ce4bd0a8580d>:2(get_hog_features)
+     3580    0.001    0.000    0.001    0.000 {built-in method builtins.len}
+      882    0.001    0.000    0.001    0.000 function_base.py:13(_index_deprecate)
+        1    0.001    0.001    0.001    0.001 {method 'close' of '_io.BufferedReader' objects}
+     1470    0.001    0.000    0.001    0.000 base.py:1111(isspmatrix)
+      294    0.001    0.000    0.004    0.000 fromnumeric.py:1380(ravel)
+        1    0.000    0.000    0.000    0.000 <ipython-input-16-4287944b9f96>:3(add_heat)
+       63    0.000    0.000    0.000    0.000 {method 'read' of '_io.BufferedReader' objects}
+        1    0.000    0.000    0.000    0.000 {built-in method io.open}
+      296    0.000    0.000    0.000    0.000 {method 'reshape' of 'numpy.ndarray' objects}
+      883    0.000    0.000    0.004    0.000 _methods.py:40(_all)
+      294    0.000    0.000    0.004    0.000 extmath.py:115(safe_sparse_dot)
+      892    0.000    0.000    0.047    0.000 numeric.py:463(asarray)
+      588    0.000    0.000    0.000    0.000 __init__.py:29(get_config)
+       12    0.000    0.000    0.000    0.000 {rectangle}
+        1    0.000    0.000    0.000    0.000 {built-in method PIL._imaging.new}
+      294    0.000    0.000    0.000    0.000 validation.py:736(<listcomp>)
+        1    0.000    0.000    0.044    0.044 ImageFile.py:130(load)
+      592    0.000    0.000    0.000    0.000 {built-in method builtins.getattr}
+      882    0.000    0.000    0.000    0.000 {built-in method _operator.index}
+      298    0.000    0.000    0.002    0.000 _methods.py:25(_amax)
+      954    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
+      296    0.000    0.000    0.004    0.000 function_base.py:1453(copy)
+        1    0.000    0.000    0.049    0.049 image.py:1228(imread)
+        9    0.000    0.000    0.000    0.000 {built-in method __new__ of type object at 0x10340cd78}
+      294    0.000    0.000    0.000    0.000 {built-in method builtins.all}
+        3    0.000    0.000    0.000    0.000 {method 'seek' of '_io.BufferedReader' objects}
+        1    0.000    0.000    0.000    0.000 {built-in method numpy.core.multiarray.copyto}
+        1    0.000    0.000    0.002    0.002 Image.py:2499(open)
+        1    0.000    0.000    0.001    0.001 JpegImagePlugin.py:304(_open)
+        3    0.000    0.000    0.000    0.000 {built-in method _warnings.warn}
+        1    0.000    0.000    0.047    0.047 Image.py:694(tobytes)
+        5    0.000    0.000    0.000    0.000 JpegImagePlugin.py:57(APP)
+        7    0.000    0.000    0.000    0.000 {built-in method numpy.core.multiarray.empty_like}
+        8    0.000    0.000    0.000    0.000 TiffImagePlugin.py:515(_setitem)
+        3    0.000    0.000    0.002    0.001 _hog.py:161(<listcomp>)
+        1    0.000    0.000    0.000    0.000 morphology.py:123(generate_binary_structure)
+       52    0.000    0.000    0.000    0.000 {built-in method _struct.unpack}
+        1    0.000    0.000    0.000    0.000 JpegImagePlugin.py:151(SOF)
+        1    0.000    0.000    0.479    0.479 {built-in method builtins.exec}
+       34    0.000    0.000    0.000    0.000 _binary.py:71(i16be)
+        1    0.000    0.000    0.000    0.000 JpegImagePlugin.py:436(_getexif)
+        1    0.000    0.000    0.000    0.000 __init__.py:251(__init__)
+        9    0.000    0.000    0.000    0.000 abc.py:178(__instancecheck__)
+        2    0.000    0.000    0.000    0.000 TiffImagePlugin.py:688(load)
+        1    0.000    0.000    0.000    0.000 Image.py:558(close)
+        4    0.000    0.000    0.000    0.000 TiffImagePlugin.py:898(__getitem__)
+       18    0.000    0.000    0.000    0.000 _weakrefset.py:70(__contains__)
+        1    0.000    0.000    0.048    0.048 image.py:1252(pilread)
+        1    0.000    0.000    0.004    0.004 measurements.py:46(label)
+        1    0.000    0.000    0.000    0.000 numeric.py:2008(indices)
+        6    0.000    0.000    0.000    0.000 fromnumeric.py:2584(ndim)
+        8    0.000    0.000    0.000    0.000 TiffImagePlugin.py:611(<lambda>)
+        1    0.000    0.000    0.047    0.047 Image.py:658(__array_interface__)
+       27    0.000    0.000    0.000    0.000 {method 'get' of 'dict' objects}
+        4    0.000    0.000    0.000    0.000 fromnumeric.py:2275(amin)
+        2    0.000    0.000    0.000    0.000 JpegImagePlugin.py:199(DQT)
+        1    0.000    0.000    0.001    0.001 Image.py:2543(_open_core)
+        2    0.000    0.000    0.000    0.000 TiffImagePlugin.py:439(__init__)
+       18    0.000    0.000    0.000    0.000 TiffImagePlugin.py:585(_unpack)
+        1    0.000    0.000    0.000    0.000 Image.py:416(_getdecoder)
+        6    0.000    0.000    0.000    0.000 _collections_abc.py:742(__iter__)
+        1    0.000    0.000    0.000    0.000 warnings.py:35(_formatwarnmsg_impl)
+        2    0.000    0.000    0.000    0.000 warnings.py:398(__init__)
+        8    0.000    0.000    0.000    0.000 TiffTags.py:26(__new__)
+        1    0.000    0.000    0.001    0.001 ImageFile.py:78(__init__)
+        1    0.000    0.000    0.001    0.001 JpegImagePlugin.py:763(jpeg_factory)
+        8    0.000    0.000    0.000    0.000 TiffTags.py:34(lookup)
+        2    0.000    0.000    0.000    0.000 posixpath.py:119(splitext)
+        2    0.000    0.000    0.000    0.000 genericpath.py:117(_splitext)
+        3    0.000    0.000    0.000    0.000 _warnings.py:10(warn)
+        8    0.000    0.000    0.000    0.000 {method 'format' of 'str' objects}
+        1    0.000    0.000    0.001    0.001 <ipython-input-3-da7395688558>:1(convert_color)
+        1    0.000    0.000    0.000    0.000 parse.py:359(urlparse)
+        1    0.000    0.000    0.000    0.000 Image.py:438(_getencoder)
+        2    0.000    0.000    0.000    0.000 JpegImagePlugin.py:422(_fixup_dict)
+       16    0.000    0.000    0.000    0.000 TiffImagePlugin.py:549(<genexpr>)
+        1    0.000    0.000    0.000    0.000 parse.py:392(urlsplit)
+        8    0.000    0.000    0.000    0.000 <string>:12(__new__)
+        6    0.000    0.000    0.002    0.000 numeric.py:586(ascontiguousarray)
+        1    0.000    0.000    0.004    0.004 fromnumeric.py:55(_wrapfunc)
+       31    0.000    0.000    0.000    0.000 _binary.py:23(i8)
+        3    0.000    0.000    0.000    0.000 utils.py:156(assert_nD)
+        1    0.000    0.000    0.000    0.000 ImageFile.py:259(load_prepare)
+        1    0.000    0.000    0.000    0.000 JpegImagePlugin.py:292(_accept)
+        6    0.000    0.000    0.000    0.000 JpegImagePlugin.py:52(Skip)
+        4    0.000    0.000    0.000    0.000 TiffImagePlugin.py:471(reset)
+        8    0.000    0.000    0.000    0.000 TiffTags.py:30(cvt_enum)
+        2    0.000    0.000    0.000    0.000 {built-in method numpy.core.multiarray.empty}
+       14    0.000    0.000    0.000    0.000 ImageFile.py:516(_safe_read)
+        8    0.000    0.000    0.000    0.000 TiffImagePlugin.py:680(_ensure_read)
+        2    0.000    0.000    0.000    0.000 TiffImagePlugin.py:891(__iter__)
+        2    0.000    0.000    0.000    0.000 {method 'sort' of 'list' objects}
+        1    0.000    0.000    0.000    0.000 __init__.py:1374(findCaller)
+        1    0.000    0.000    0.000    0.000 type_check.py:251(iscomplexobj)
+        1    0.000    0.000    0.000    0.000 Image.py:517(__init__)
+        2    0.000    0.000    0.000    0.000 JpegImagePlugin.py:433(<dictcomp>)
+        1    0.000    0.000    0.004    0.004 fromnumeric.py:1673(clip)
+        4    0.000    0.000    0.000    0.000 _methods.py:28(_amin)
+        4    0.000    0.000    0.000    0.000 JpegImagePlugin.py:425(_fixup)
+       14    0.000    0.000    0.000    0.000 {built-in method builtins.setattr}
+        2    0.000    0.000    0.000    0.000 posixpath.py:50(normcase)
+        1    0.000    0.000    0.000    0.000 warnings.py:85(_showwarnmsg)
+        1    0.000    0.000    0.000    0.000 __init__.py:1983(_showwarning)
+        2    0.000    0.000    0.000    0.000 Image.py:792(load)
+        1    0.000    0.000    0.000    0.000 {built-in method PIL._imaging.jpeg_decoder}
+        1    0.000    0.000    0.047    0.047 image.py:1358(pil_to_array)
+        2    0.000    0.000    0.000    0.000 TiffImagePlugin.py:843(__init__)
+        2    0.000    0.000    0.000    0.000 {built-in method builtins.locals}
+        1    0.000    0.000    0.000    0.000 <frozen importlib._bootstrap>:997(_handle_fromlist)
+        2    0.000    0.000    0.000    0.000 _collections_abc.py:676(items)
+        1    0.000    0.000    0.000    0.000 __init__.py:1159(getLogger)
+        1    0.000    0.000    0.000    0.000 __init__.py:1308(warning)
+        1    0.000    0.000    0.000    0.000 __init__.py:1419(_log)
+        1    0.000    0.000    0.000    0.000 __init__.py:1444(handle)
+        1    0.000    0.000    0.000    0.000 __init__.py:1498(callHandlers)
+        2    0.000    0.000    0.000    0.000 __init__.py:1528(getEffectiveLevel)
+        2    0.000    0.000    0.000    0.000 __init__.py:1542(isEnabledFor)
+        5    0.000    0.000    0.000    0.000 {method 'rfind' of 'str' objects}
+        1    0.000    0.000    0.000    0.000 posixpath.py:142(basename)
+        2    0.000    0.000    0.000    0.000 _collections_abc.py:698(__init__)
+        1    0.000    0.000    0.000    0.000 __init__.py:219(_acquireLock)
+        1    0.000    0.000    0.000    0.000 __init__.py:1404(makeRecord)
+        1    0.000    0.000    0.000    0.000 __init__.py:1832(getLogger)
+        2    0.000    0.000    0.000    0.000 parse.py:109(_coerce_args)
+        1    0.000    0.000    0.000    0.000 numeric.py:87(zeros_like)
+        1    0.000    0.000    0.000    0.000 Image.py:555(__exit__)
+        1    0.000    0.000    0.000    0.000 {method 'setimage' of 'ImagingDecoder' objects}
+        1    0.000    0.000    0.000    0.000 JpegImagePlugin.py:415(_getexif)
+        6    0.000    0.000    0.000    0.000 {method 'pop' of 'dict' objects}
+        1    0.000    0.000    0.000    0.000 {built-in method builtins.max}
+        5    0.000    0.000    0.000    0.000 {built-in method posix.fspath}
+        2    0.000    0.000    0.000    0.000 {method 'tell' of '_io.BytesIO' objects}
+        9    0.000    0.000    0.000    0.000 {method 'read' of '_io.BytesIO' objects}
+        1    0.000    0.000    0.000    0.000 warnings.py:15(formatwarning)
+        1    0.000    0.000    0.000    0.000 threading.py:1076(name)
+        1    0.000    0.000    0.000    0.000 linecache.py:15(getline)
+        1    0.000    0.000    0.000    0.000 linecache.py:37(getlines)
+        1    0.000    0.000    0.000    0.000 __init__.py:157(<lambda>)
+        1    0.000    0.000    0.000    0.000 Image.py:284(_conv_type_shape)
+        1    0.000    0.000    0.000    0.000 Image.py:356(preinit)
+        1    0.000    0.000    0.000    0.000 Image.py:2485(_decompression_bomb_check)
+        2    0.000    0.000    0.000    0.000 _util.py:13(isPath)
+        1    0.000    0.000    0.000    0.000 _util.py:23(__init__)
+        1    0.000    0.000    0.000    0.000 {method 'pixel_access' of 'ImagingCore' objects}
+        1    0.000    0.000    0.000    0.000 {method 'setimage' of 'ImagingEncoder' objects}
+        1    0.000    0.000    0.000    0.000 TiffImagePlugin.py:252(_accept)
+        1    0.000    0.000    0.000    0.000 JpegImagePlugin.py:481(_getmp)
+        1    0.000    0.000    0.000    0.000 {method 'strip' of 'str' objects}
+        1    0.000    0.000    0.000    0.000 {built-in method builtins.divmod}
+        1    0.000    0.000    0.000    0.000 {built-in method builtins.issubclass}
+        1    0.000    0.000    0.000    0.000 {built-in method sys._getframe}
+        2    0.000    0.000    0.000    0.000 {built-in method _thread.get_ident}
+        1    0.000    0.000    0.000    0.000 {method 'acquire' of '_thread.RLock' objects}
+        1    0.000    0.000    0.000    0.000 {method 'release' of '_thread.RLock' objects}
+        1    0.000    0.000    0.000    0.000 {built-in method posix.getpid}
+        1    0.000    0.000    0.000    0.000 {built-in method time.time}
+        1    0.000    0.000    0.000    0.000 {method 'seek' of '_io.BytesIO' objects}
+        1    0.000    0.000    0.000    0.000 posixpath.py:39(_get_sep)
+        1    0.000    0.000    0.000    0.000 threading.py:1230(current_thread)
+        1    0.000    0.000    0.000    0.000 __init__.py:120(getLevelName)
+        1    0.000    0.000    0.000    0.000 __init__.py:228(_releaseLock)
+        1    0.000    0.000    0.000    0.000 __init__.py:703(filter)
+        1    0.000    0.000    0.000    0.000 __init__.py:1284(debug)
+        2    0.000    0.000    0.000    0.000 parse.py:98(_noop)
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+        1    0.000    0.000    0.000    0.000 process.py:35(current_process)
+        1    0.000    0.000    0.000    0.000 process.py:146(name)
+        1    0.000    0.000    0.000    0.000 index_tricks.py:661(__getitem__)
+        1    0.000    0.000    0.000    0.000 {built-in method PIL._imaging.raw_encoder}
+        1    0.000    0.000    0.000    0.000 BmpImagePlugin.py:49(_accept)
+        1    0.000    0.000    0.000    0.000 GifImagePlugin.py:38(_accept)
+        1    0.000    0.000    0.000    0.000 ImageFile.py:66(_tilesort)
+        1    0.000    0.000    0.000    0.000 JpegImagePlugin.py:418(_getmp)
+        1    0.000    0.000    0.000    0.000 {method 'update' of 'dict' objects}
+        1    0.000    0.000    0.000    0.000 {method 'lower' of 'str' objects}
+        1    0.000    0.000    0.000    0.000 {built-in method builtins.callable}
+        1    0.000    0.000    0.000    0.000 __init__.py:1970(handle)
+        1    0.000    0.000    0.000    0.000 Image.py:552(__enter__)
+        1    0.000    0.000    0.000    0.000 Image.py:584(__del__)
+        1    0.000    0.000    0.000    0.000 {method 'cleanup' of 'ImagingDecoder' objects}
+        1    0.000    0.000    0.000    0.000 ImageFile.py:268(load_end)
