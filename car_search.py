@@ -36,15 +36,27 @@ class Car():
         self.current_boxes = []
         self.previous_boxes = []
 
+        self.search_cars = True
+        self.search_lanes = True
+
+        self.input_image = None
+        self.output_frame = None
+        self.found_cars_img = None
+        self.found_lanes_img = None
+
     def search_rate(self, r):
         self.search_freq = np.int(self.video_fps / r)
 
-    def processFrame(self, img):
-        self.n_frame += 1
-
+    def searchCars(self, img):
         ysal = [400, 400, 400, 400, 400]
         ysol = [656, 656, 656, 656, 656]
         scales = [1, 1.25, 1.5, 1.75, 2]
+
+        # ysal = [400, 400, 400, 400, 400, 400, 400, 400]
+        # ysol = [656, 656, 656, 656, 656, 656, 656, 656]
+        # scales = [1, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4]
+
+        image = np.zeros_like(img)
 
         if np.any(self.current_boxes):
             self.previous_boxes = np.copy(self.current_boxes)
@@ -84,7 +96,7 @@ class Car():
 
             # pixel_box has boxes after heatmap threshold
             # out_img, pixel_box = self.draw_labeled_boxes(img, carlbl)
-
+            self.found_cars_img = self.draw_locations(image, pixel_box)
             out_img = self.draw_locations(img, pixel_box)
 
             self.current_boxes = pixel_box
@@ -96,11 +108,45 @@ class Car():
             # out_img = self.draw_labeled_boxes(img, lbs)
             # out_img = self.draw_labeled_boxes(img, self.previous_boxes)
             out_img = self.draw_locations(img, self.current_boxes)
+            self.found_cars_img = self.draw_locations(image,
+                                                      self.current_boxes)
 
-        # =====================
+        return out_img
+
+    def searchLanes(self, img):
+        self.lanes.processFrame(img)
+        self.found_lanes_img = self.lanes.output_warp
+        return None
+
+    def processFrame(self, img):
+        self.n_frame += 1
+
+        self.input_image = img
+
+        # ===========================
+        # Find Cars
+        # ===========================
+        if self.search_cars is True:
+            self.searchCars(img)
+            # tmp = self.found_cars_img
+
+        # ===========================
         # Find Road Lane Lines
-        # =====================
-        # out_img = self.lanes.processFrame(out_img)
+        # ===========================
+        if self.search_lanes is True:
+            self.searchLanes(img)
+            # tmp = self.found_lanes_img
+
+        # add images => supposed they draw on different regions
+        # if self.found_cars_img is not None and \
+        #   self.found_lanes_img is not None:
+        #    tmp = self.found_cars_img + self.found_lanes_img
+
+        # put drawing on top of original frame
+        out_img = cv2.addWeighted(self.input_image, 1,
+                                  self.found_cars_img, 0.5, 0)
+        out_img = cv2.addWeighted(out_img, 1,
+                                  self.found_lanes_img, 0.3, 0)
 
         return out_img
 

@@ -330,6 +330,7 @@ class Lane():
 
         self.input_frame = None
         self.input_image = None
+        self.output_warp = None
         self.monitor = monitor
 
     def processFrame(self, img):
@@ -760,6 +761,7 @@ class Lane():
 
         # Combine the result with the original image
         result = cv2.addWeighted(self.input_image, 1, newwarp, 0.3, 0)
+        self.output_warp = newwarp
 
         if self.monitor is True:
             #
