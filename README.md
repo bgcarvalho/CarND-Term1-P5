@@ -13,8 +13,8 @@ and track vehicles' positions in a video feed.
 [hog]: ./output_images/hog_examples.png
 [features]: ./output_images/feature_vectors.png
 [test]: ./output_images/test_model.png
-[examples]: ./output_images/data_set_examples2.png
-[examples]: ./output_images/data_set_examples2.png
+[searchs1]: ./output_images/searchwin_s1.png
+[heatmap]: ./output_images/heatmap.png
 
 
 
@@ -23,7 +23,7 @@ and track vehicles' positions in a video feed.
 At first, as a good practice we should look some examples in the dataset,
 cars and not cars.
 
-
+![Cars and Not Cars dataset examples][data_set]
 
 To extract image HOG features it is used `skimage.feature.hog` function.
 The main arguments are:
@@ -72,8 +72,11 @@ hog_features = np.ravel(hog_features)
 
 The function `np.ravel` reshapes the vetor turning it into 1-D array.
 
+
+![HOG examples for some images][hog]
+
 These features were fed into a Support Vector Machine classifier (SVC) after
-normalization. The normalization was conducted using 
+normalization (zero mean, unit variance). The normalization was conducted using 
 `sklearn.preprocessing.StandardScaler` in lines (note the `float64` type):
 
 ```python
@@ -86,6 +89,10 @@ scaled_X = X_scaler.transform(X)
 
 The scikit-learn scaler works best with with `np.float64` data type.
 
+
+![Feature vectors plotted][features]
+
+
 ### Sliding search
 
 The model was trained for 64x64 car images. In order to properly search cars 
@@ -93,28 +100,21 @@ in the camera image it is used a sliding window tecnique. The algorithm walks
 through the image asking the SVC to predict smaller regions. For each of these
 windows it is calculated the feature vector with raw color, histogram and HOG.
 
-The algorithm uses the original window size and a scale.
-
-
-Test image 5 does not find the car. That happens because the algorithm is run
-only once, some the heatmap is equal threshold, and then it is not include
-in final image. For video processing the frame is test against 4 different 
-scales, eventually finding the same car more than once and elevating the
-"heat".
-
-
-Time to extract features before training: 100s.
-Time to train: 27s
-Time to predict cars in a single frame: 
-
-
-
-
-Raw colors (`bin_spatial`) and histogram (`color_hist`) are also reshaped to
-1-D and then all three concatenated to form the feature vector.
+![search windows for scale = 1][searchs1]
 
 The `cells_per_step = 2` variable controlls the overlapping in search, 
 in this case equals to 75% [Class](https://classroom.udacity.com/nanodegrees/nd013/parts/fbf77062-5703-404e-b60c-95b78b2f3f9e/modules/2b62a1c3-e151-4a0e-b6b6-e424fa46ceab/lessons/fd66c083-4ccb-4fe3-bda1-c29db76f50a0/concepts/c3e815c7-1794-4854-8842-5d7b96276642).
+
+Together with HOG features are also use raw colors (`bin_spatial`) and 
+histogram (`color_hist`), both reshaped to
+1-D and then all three concatenated. This feature vector is chosen to have
+enough "car information" and reduce false positives.
+
+Also a heat map is used to increase confidence by suming detections of the 
+same car and then applying a threshold (note that the leftmost detection is
+discarted).
+
+![Heatmap reduces false positives][heatmap]
 
 
 ## Discussions
@@ -122,6 +122,11 @@ in this case equals to 75% [Class](https://classroom.udacity.com/nanodegrees/nd0
 - YCrCB color space works fine
 - A bug in [0 - 1] <=> [0 255] intervals convertions took me a few days to solve
 - Processing the search every 8 or 10 frames helps to speed up the algorithm,
-but is only enough to process 3 frames/s
+but is not enough to consider the algorithm fast
+- Time to extract features before training: 100s
+- Time to train: 27s
+- Time to predict cars in a single frame: 0.48s (testing with four scales)
+
+
 
 ## References
